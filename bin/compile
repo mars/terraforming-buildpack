@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir>
+
+# Fail immediately on non-zero exit code.
+set -e
+# Fail immediately on non-zero exit code within a pipeline.
+set -o pipefail
+# Fail on undeclared variables.
+set -u
+# Debug, echo every command
+#set -x
+
+function error() {
+  echo " !     $*" >&2
+  exit 1
+}
+
+function topic() {
+  echo "-----> $*"
+}
+
+function indent() {
+  c='s/^/       /'
+  case $(uname) in
+    Darwin) sed -l "$c";;
+    *)      sed -u "$c";;
+  esac
+}
+
+# parse and derive params
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+
+if [ -d "$ENV_DIR" ]; then
+  topic "Exporting environment variables"
+  for e in $(ls $ENV_DIR); do
+    if [[ $e == TF_* ]] || [[ $e == TERRAFORM_* ]]
+      then
+      echo "+ $e" | indent
+      export "$e=$(cat $ENV_DIR/$e)"
+    fi
+  done
+fi
+
+terraform_bin="$BUILD_DIR/bin/terraform"
+terraform_state_dir="$CACHE_DIR/terraform_state"
+mkdir -p $terraform_state_dir
+terraform_outputs_dir="$BUILD_DIR/terraform_data"
+mkdir -p $terraform_outputs_dir
+
+TERRAFORM_BIN_URL="${TERRAFORM_BIN_URL:-https://releases.hashicorp.com/terraform/0.11.3/terraform_0.11.3_linux_amd64.zip}"
+
+topic "Installing Terraform from ${TERRAFORM_BIN_URL}"
+curl -s -L "${TERRAFORM_BIN_URL}" > "terraform-bin.zip"
+mkdir -p "$BUILD_DIR/bin"
+unzip -p "terraform-bin.zip" > "$terraform_bin"
+chmod +x "$terraform_bin"
+rm "terraform-bin.zip"
+
+# Run all Terraform commands in persistent cache dir
+cd $terraform_state_dir
+
+topic '`terraform init`'
+eval "$terraform_bin init -input=false $BUILD_DIR"
+
+topic '`terraform apply`'
+eval "$terraform_bin apply -auto-approve -input=false $BUILD_DIR"
+
+topic '`terraform output`'
+eval "$terraform_bin output -json" > "$terraform_outputs_dir/outputs.json"
