@@ -12,7 +12,7 @@ Apply a Terraform config in the build process of a Heroku app.
 Usage
 -----
 
-In a git repo that contains Terraform config `*.tf` files,
+In a git repo that contains at least a `main.tf` Terraform config file,
 
 ```bash
 heroku create --buildpack https://github.com/mars/terraforming-buildpack

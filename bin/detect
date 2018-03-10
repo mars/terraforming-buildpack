@@ -1,6 +1,8 @@
 #!/bin/sh
 
-if [ -f $1/*.tf ]; then
+BUILD_DIR=$1
+
+if [ -f $BUILD_DIR/main.tf ]; then
   echo "Terraforming 🌱 "
   exit 0
 else
