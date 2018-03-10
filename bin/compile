@@ -62,10 +62,10 @@ rm "terraform-bin.zip"
 cd $terraform_state_dir
 
 topic '`terraform init`'
-eval "$terraform_bin init -input=false $BUILD_DIR"
+eval "$terraform_bin init -input=false $BUILD_DIR" | indent
 
 topic '`terraform apply`'
-eval "$terraform_bin apply -auto-approve -input=false $BUILD_DIR"
+eval "$terraform_bin apply -auto-approve -input=false $BUILD_DIR" | indent
 
 topic '`terraform output`'
-eval "$terraform_bin output -json" > "$terraform_outputs_dir/outputs.json"
+eval "$terraform_bin output -json" > "$terraform_outputs_dir/outputs.json" | indent

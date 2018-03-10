@@ -7,7 +7,10 @@ Apply a Terraform config in the build process of a Heroku app.
 * caches state `terraform.tfstate` in the build cache
 * stores the Terraform outputs JSON in the slug: `terraform-data/outputs.json`
 
-🚨🔬 **This is a proof of concept. Not production ready.** This buildpack treats the inputs & outputs as if they are not sensitive, secret data.
+🚨🔬 **This is a proof of concept. Not production ready.** Unsolved problems include:
+
+* *Not secure*: inputs & outputs are stored in the filesystem (cache & slug)
+* *Not durable*: looses partial state updates when `terraform apply` fails
 
 Usage
 -----
