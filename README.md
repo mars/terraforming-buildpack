@@ -11,13 +11,20 @@ The Terraform config must implement a non-local [backend](https://www.terraform.
 Usage
 -----
 
+▶️ **Deploy the [terraforming-app](https://github.com/mars/terraforming-app)** which includes Postgres backend, automated initialization, and a minimal example Terraform config.
+
+### Manual app setup
+
 In a git repo that contains at least a `main.tf` Terraform config file,
 
 ```bash
 heroku create --buildpack https://github.com/mars/terraforming-buildpack
 
 # Set any variables required by the Terraform config
-heroku config:set TF_VAR_heroku_api_key=xxxxx
+# Credentials for the Terraform Heroku provider
+heroku config:set HEROKU_API_KEY=xxxxx HEROKU_EMAIL=x@example.com
+# Input variables
+heroku config:set TF_VAR_example_app_name=yyyyy
 
 git push heroku master
 
