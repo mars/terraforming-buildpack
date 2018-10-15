@@ -35,7 +35,7 @@ ENV_DIR=$3
 if [ -d "$ENV_DIR" ]; then
   topic "Exporting environment variables"
   for e in $(ls $ENV_DIR); do
-    if [[ $e == TF_* ]] || [[ $e == TERRAFORM_* ]]
+    if [[ $e == TERRAFORM_* ]]
       then
       echo "+ $e" | indent
       export "$e=$(cat $ENV_DIR/$e)"
@@ -44,12 +44,8 @@ if [ -d "$ENV_DIR" ]; then
 fi
 
 terraform_bin="$BUILD_DIR/bin/terraform"
-terraform_state_dir="$CACHE_DIR/terraform_state"
-mkdir -p $terraform_state_dir
-terraform_outputs_dir="$BUILD_DIR/terraform_data"
-mkdir -p $terraform_outputs_dir
 
-TERRAFORM_BIN_URL="${TERRAFORM_BIN_URL:-https://releases.hashicorp.com/terraform/0.11.3/terraform_0.11.3_linux_amd64.zip}"
+TERRAFORM_BIN_URL="${TERRAFORM_BIN_URL:-https://releases.hashicorp.com/terraform/0.11.8/terraform_0.11.8_linux_amd64.zip}"
 
 topic "Installing Terraform from ${TERRAFORM_BIN_URL}"
 curl -s -L "${TERRAFORM_BIN_URL}" > "terraform-bin.zip"
@@ -57,15 +53,3 @@ mkdir -p "$BUILD_DIR/bin"
 unzip -p "terraform-bin.zip" > "$terraform_bin"
 chmod +x "$terraform_bin"
 rm "terraform-bin.zip"
-
-# Run all Terraform commands in persistent cache dir
-cd $terraform_state_dir
-
-topic '`terraform init`'
-eval "$terraform_bin init -input=false $BUILD_DIR" | indent
-
-topic '`terraform apply`'
-eval "$terraform_bin apply -auto-approve -input=false $BUILD_DIR" | indent
-
-topic '`terraform output`'
-eval "$terraform_bin output -json" > "$terraform_outputs_dir/outputs.json" | indent

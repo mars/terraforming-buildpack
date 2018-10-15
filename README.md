@@ -1,16 +1,12 @@
 Terraforming 🌱 buildpack for Heroku
 ==================================
 
-Apply a Terraform config in the build process of a Heroku app.
+Use [Terraform](https://www.terraform.io/) in a [Heroku](https://www.heroku.com/) app.
 
-* supports arbitrary `TF_*` config variables such as [`TF_VAR_*`](https://www.terraform.io/docs/configuration/variables.html#environment-variables)
-* caches state `terraform.tfstate` in the build cache
-* stores the Terraform outputs JSON in the slug: `terraform-data/outputs.json`
+Requires
+--------
 
-🚨🔬 **This is a proof of concept. Not production ready.** Unsolved problems include:
-
-* *Not secure*: inputs & outputs are stored in the filesystem (cache & slug)
-* *Not durable*: looses partial state updates when `terraform apply` fails
+The Terraform config must implement a non-local [backend](https://www.terraform.io/docs/backends/index.html), because otherwise state will be lost between runs. The default local backend saves state in the filesystem which [ephemeral in Heroku dynos](https://devcenter.heroku.com/articles/dynos#ephemeral-filesystem).
 
 Usage
 -----
@@ -21,30 +17,13 @@ In a git repo that contains at least a `main.tf` Terraform config file,
 heroku create --buildpack https://github.com/mars/terraforming-buildpack
 
 # Set any variables required by the Terraform config
-heroku config:set TF_VAR_aws_region=us-west-2
+heroku config:set TF_VAR_heroku_api_key=xxxxx
 
 git push heroku master
-```
 
-Development
------------
-
-Rather crude but functional dev on macOS:
-
-```bash
-# Make a copy of the test data.
-cp -r test-data tmp
-
-# Execute the build process in that tmp directory structure.
-TERRAFORM_BIN_URL=https://releases.hashicorp.com/terraform/0.11.3/terraform_0.11.3_darwin_amd64.zip \
-  ./bin/compile $(pwd)/tmp/build $(pwd)/tmp/cache $(pwd)/tmp/env
-
-# Once complete,
-#  inspect the slug in `tmp/build/`
-#  inspect the state in `tmp/terraform_state/`
-
-# Clean-up before the next test run.
-rm -rf tmp/
+heroku run terraform init
+heroku run terraform apply
+heroku run terraform output
 ```
 
 Configuration
