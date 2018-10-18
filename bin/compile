@@ -31,6 +31,7 @@ function indent() {
 BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
+BP_DIR=`cd $(dirname $0); cd ..; pwd`
 
 if [ -d "$ENV_DIR" ]; then
   topic "Exporting environment variables"
@@ -53,3 +54,7 @@ mkdir -p "$BUILD_DIR/bin"
 unzip -p "terraform-bin.zip" > "$terraform_bin"
 chmod +x "$terraform_bin"
 rm "terraform-bin.zip"
+
+echo 'Setting up $PATH' | indent
+mkdir -p "$BUILD_DIR/.profile.d"
+cp $BP_DIR/.profile.d/* $BUILD_DIR/.profile.d/
