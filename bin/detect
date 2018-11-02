@@ -2,10 +2,14 @@
 
 BUILD_DIR=$1
 
-if [ -f $BUILD_DIR/main.tf ]; then
-  echo "Terraforming 🌱 "
-  exit 0
-else
-  echo "Cannot Terraform, requires main.tf config file."
-  exit 1
-fi
+for file in $BUILD_DIR/*.tf
+do
+  if [ -f "${file}" ]
+  then
+    echo "Terraforming 🌱 "
+    exit 0
+  fi
+done
+
+echo "Cannot Terraform, requires at least one *.tf config file."
+exit 1

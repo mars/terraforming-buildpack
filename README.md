@@ -15,7 +15,7 @@ Usage
 
 ### Manual app setup
 
-In a git repo that contains at least a `main.tf` Terraform config file,
+In a git repo that contains at least a `*.tf` Terraform config file, such as `main.tf`,
 
 ```bash
 heroku create --buildpack https://github.com/mars/terraforming-buildpack
