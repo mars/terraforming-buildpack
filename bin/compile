@@ -46,7 +46,7 @@ fi
 
 terraform_bin="$BUILD_DIR/bin/terraform"
 
-TERRAFORM_BIN_URL="${TERRAFORM_BIN_URL:-https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip}"
+TERRAFORM_BIN_URL="${TERRAFORM_BIN_URL:-https://releases.hashicorp.com/terraform/1.0.9/terraform_1.0.9_linux_amd64.zip}"
 
 topic "Installing Terraform from ${TERRAFORM_BIN_URL}"
 curl -s -L "${TERRAFORM_BIN_URL}" > "terraform-bin.zip"
